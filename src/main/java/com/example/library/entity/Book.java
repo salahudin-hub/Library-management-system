@@ -1,9 +1,6 @@
 package com.example.library.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -14,20 +11,23 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String title;
-    private String author;
+
+    @ManyToOne
+    @JoinColumn(name = "author_id", nullable = false)
+    private Author author;
+
+    @Column(nullable = false)
     private boolean isAvailable;
 
-    // Add a OneToMany relationship with Transaction
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaction> transactions = new ArrayList<>();
 
-    // Default constructor (required by JPA)
-    public Book() {
-    }
+    // Constructors
+    public Book() {}
 
-    // Parameterized constructor
-    public Book(String title, String author, boolean isAvailable) {
+    public Book(String title, Author author, boolean isAvailable) {
         this.title = title;
         this.author = author;
         this.isAvailable = isAvailable;
@@ -50,15 +50,14 @@ public class Book {
         this.title = title;
     }
 
-    public String getAuthor() {
+    public Author getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author) {
+    public void setAuthor(Author author) {
         this.author = author;
     }
 
-    @JsonProperty("isAvailable")
     public boolean isAvailable() {
         return isAvailable;
     }
@@ -67,7 +66,6 @@ public class Book {
         isAvailable = available;
     }
 
-    // Getter and Setter for transactions
     public List<Transaction> getTransactions() {
         return transactions;
     }
@@ -76,18 +74,17 @@ public class Book {
         this.transactions = transactions;
     }
 
-    // toString method
+    // toString, equals, and hashCode methods
     @Override
     public String toString() {
         return "Book{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
-                ", author='" + author + '\'' +
+                ", author=" + author +
                 ", isAvailable=" + isAvailable +
                 '}';
     }
 
-    // equals and hashCode methods
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
