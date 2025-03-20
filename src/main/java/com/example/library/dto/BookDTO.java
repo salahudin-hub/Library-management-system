@@ -4,7 +4,7 @@ public class BookDTO {
     private Long id;
     private String title;
     private Long authorId; // Changed from String author
-    private boolean isAvailable;
+    private boolean available;
 
     // Getters and Setters
     public Long getId() {
@@ -32,10 +32,10 @@ public class BookDTO {
     }
 
     public boolean isAvailable() {
-        return isAvailable;
+        return available;
     }
 
     public void setAvailable(boolean available) {
-        isAvailable = available;
+        this.available = available;
     }
 }

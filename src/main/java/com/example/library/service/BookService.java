@@ -38,26 +38,58 @@ public class BookService {
 
     // Add a new book
     public BookDTO addBook(BookDTO bookDTO) {
+        // Debug log: Print the received isAvailable value
+        System.out.println("Received isAvailable in addBook: " + bookDTO.isAvailable());
+
+        // Fetch the Author entity using authorId
         Author author = authorRepository.findById(bookDTO.getAuthorId())
                 .orElseThrow(() -> new ResourceNotFoundException("Author not found with id: " + bookDTO.getAuthorId()));
+
+        // Create the Book entity
         Book book = new Book();
         book.setTitle(bookDTO.getTitle());
         book.setAuthor(author);
         book.setAvailable(bookDTO.isAvailable());
+
+        // Debug log: Print the isAvailable value before saving
+        System.out.println("Book entity isAvailable before saving: " + book.isAvailable());
+
+        // Save the book
         Book savedBook = bookRepository.save(book);
+
+        // Debug log: Print the isAvailable value after saving
+        System.out.println("Book entity isAvailable after saving: " + savedBook.isAvailable());
+
         return BookMapper.toDTO(savedBook);
     }
 
     // Update a book
     public BookDTO updateBook(Long id, BookDTO bookDTO) {
+        // Debug log: Print the received isAvailable value
+        System.out.println("Received isAvailable in updateBook: " + bookDTO.isAvailable());
+
+        // Fetch the existing book
         Book existingBook = bookRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
+
+        // Fetch the Author entity using authorId
         Author author = authorRepository.findById(bookDTO.getAuthorId())
                 .orElseThrow(() -> new ResourceNotFoundException("Author not found with id: " + bookDTO.getAuthorId()));
+
+        // Update the book details
         existingBook.setTitle(bookDTO.getTitle());
         existingBook.setAuthor(author);
         existingBook.setAvailable(bookDTO.isAvailable());
+
+        // Debug log: Print the isAvailable value before saving
+        System.out.println("Book entity isAvailable before saving: " + existingBook.isAvailable());
+
+        // Save the updated book
         Book updatedBook = bookRepository.save(existingBook);
+
+        // Debug log: Print the isAvailable value after saving
+        System.out.println("Book entity isAvailable after saving: " + updatedBook.isAvailable());
+
         return BookMapper.toDTO(updatedBook);
     }
 

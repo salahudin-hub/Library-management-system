@@ -13,6 +13,7 @@ import com.example.library.entity.User;
 import com.example.library.exception.BookAlreadyReturnedException;
 import com.example.library.exception.BookNotAvailableException;
 import com.example.library.exception.ResourceNotFoundException;
+import com.example.library.service.UserActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,9 @@ public class TransactionService {
 
     @Autowired
     private TransactionRepository transactionRepository;
+
+    @Autowired
+    private UserActivityService userActivityService; // Inject the NoSQL service
 
     // Get all transactions
     public List<TransactionDTO> getAllTransactions() {
@@ -70,6 +74,14 @@ public class TransactionService {
 
         // Save the transaction
         Transaction savedTransaction = transactionRepository.save(transaction);
+
+        // Log the activity in MongoDB
+        userActivityService.logUserActivity(
+                userId.toString(), // Convert userId to String
+                "borrow", // Activity type
+                "book_id: '" + bookId + "'" // Activity details
+        );
+
         return TransactionMapper.toDTO(savedTransaction);
     }
 
@@ -92,13 +104,21 @@ public class TransactionService {
 
         // Convert the Book entity to BookDTO for updating
         BookDTO bookDTO = BookMapper.toDTO(book);
-        bookService.updateBook(book.getId(),bookDTO); // Update the book using the BookDTO
+        bookService.updateBook(book.getId(), bookDTO); // Update the book using the BookDTO
 
         // Update the return date
         transaction.setReturnDate(LocalDate.now());
 
         // Save the updated transaction
         Transaction updatedTransaction = transactionRepository.save(transaction);
+
+        // Log the activity in MongoDB
+        userActivityService.logUserActivity(
+                transaction.getUser().getId().toString(), // Convert userId to String
+                "return", // Activity type
+                "book_id: '" + transaction.getBook().getId() + "'" // Activity details
+        );
+
         return TransactionMapper.toDTO(updatedTransaction);
     }
 }
