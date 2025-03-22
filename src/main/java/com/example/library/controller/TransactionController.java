@@ -14,19 +14,19 @@ public class TransactionController {
     @Autowired
     private TransactionService transactionService;
 
-    // Get all transactions
+
     @GetMapping
     public List<TransactionDTO> getAllTransactions() {
         return transactionService.getAllTransactions();
     }
 
-    // Borrow a book
+
     @PostMapping("/borrow")
     public TransactionDTO borrowBook(@RequestParam Long bookId, @RequestParam Long userId) {
         return transactionService.borrowBook(bookId, userId);
     }
 
-    // Return a book
+
     @PostMapping("/return/{transactionId}")
     public TransactionDTO returnBook(@PathVariable Long transactionId) {
         return transactionService.returnBook(transactionId);

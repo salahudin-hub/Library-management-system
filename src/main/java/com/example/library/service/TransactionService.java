@@ -33,9 +33,9 @@ public class TransactionService {
     private TransactionRepository transactionRepository;
 
     @Autowired
-    private UserActivityService userActivityService; // Inject the NoSQL service
+    private UserActivityService userActivityService;
 
-    // Get all transactions
+
     public List<TransactionDTO> getAllTransactions() {
         List<Transaction> transactions = transactionRepository.findAll();
         return transactions.stream()
@@ -43,80 +43,79 @@ public class TransactionService {
                 .collect(Collectors.toList());
     }
 
-    // Borrow a book
+
     public TransactionDTO borrowBook(Long bookId, Long userId) {
-        // Fetch the BookDTO from the BookService
+
         BookDTO bookDTO = bookService.getBookById(bookId);
 
-        // Convert BookDTO to Book entity using BookMapper
         Book book = BookMapper.toEntity(bookDTO);
 
-        // Check if the book is available
+
         if (!book.isAvailable()) {
             throw new BookNotAvailableException("Book is not available");
         }
 
-        // Fetch the UserDTO from the UserService
+
         UserDTO userDTO = userService.getUserById(userId);
 
-        // Convert UserDTO to User entity using UserMapper
+
         User user = UserMapper.toEntity(userDTO);
 
-        // Create the transaction
+
         Transaction transaction = new Transaction();
         transaction.setBook(book);
         transaction.setUser(user);
         transaction.setBorrowDate(LocalDate.now());
 
-        // Mark the book as unavailable
-        book.setAvailable(false);
-        bookService.updateBook(bookId, BookMapper.toDTO(book)); // Update the book using the BookDTO
 
-        // Save the transaction
+        book.setAvailable(false);
+        bookService.updateBook(bookId, BookMapper.toDTO(book));
+
+
         Transaction savedTransaction = transactionRepository.save(transaction);
 
-        // Log the activity in MongoDB
+
         userActivityService.logUserActivity(
-                userId.toString(), // Convert userId to String
-                "borrow", // Activity type
-                "book_id: '" + bookId + "'" // Activity details
+                userId.toString(),
+                "borrow",
+                "book_id: '" + bookId + "'"
         );
 
         return TransactionMapper.toDTO(savedTransaction);
     }
 
-    // Return a book
+
     public TransactionDTO returnBook(Long transactionId) {
-        // Fetch the transaction
+
         Transaction transaction = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction not found with id: " + transactionId));
 
-        // Check if the book has already been returned
+
         if (transaction.getReturnDate() != null) {
             throw new BookAlreadyReturnedException("Book has already been returned");
         }
 
-        // Fetch the Book entity from the transaction
+
         Book book = transaction.getBook();
 
-        // Mark the book as available
+
         book.setAvailable(true);
 
-        // Convert the Book entity to BookDTO for updating
-        BookDTO bookDTO = BookMapper.toDTO(book);
-        bookService.updateBook(book.getId(), bookDTO); // Update the book using the BookDTO
 
-        // Update the return date
+        BookDTO bookDTO = BookMapper.toDTO(book);
+        bookService.updateBook(book.getId(), bookDTO);
+
+
         transaction.setReturnDate(LocalDate.now());
 
-        // Save the updated transaction
+
         Transaction updatedTransaction = transactionRepository.save(transaction);
 
         // Log the activity in MongoDB
         userActivityService.logUserActivity(
-                transaction.getUser().getId().toString(), // Convert userId to String
-                "return", // Activity type
-                "book_id: '" + transaction.getBook().getId() + "'" // Activity details
+                transaction.getUser().getId().toString(),
+                "return",
+                "book_id: '" + transaction.getBook().getId() + "'"
         );
 
         return TransactionMapper.toDTO(updatedTransaction);

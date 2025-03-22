@@ -16,34 +16,34 @@ public class AuthorController {
     @Autowired
     private AuthorService authorService;
 
-    // Get all authors
+
     @GetMapping
     public List<AuthorDTO> getAllAuthors() {
         return authorService.getAllAuthors();
     }
 
-    // Get an author by ID
+
     @GetMapping("/{id}")
     public ResponseEntity<AuthorDTO> getAuthor(@PathVariable Long id) {
         AuthorDTO authorDTO = authorService.getAuthorById(id);
         return new ResponseEntity<>(authorDTO, HttpStatus.OK);
     }
 
-    // Add a new author
+
     @PostMapping
     public ResponseEntity<AuthorDTO> addAuthor(@RequestBody AuthorDTO authorDTO) {
         AuthorDTO savedAuthor = authorService.addAuthor(authorDTO);
         return new ResponseEntity<>(savedAuthor, HttpStatus.CREATED);
     }
 
-    // Update an author
+
     @PutMapping("/{id}")
     public ResponseEntity<AuthorDTO> updateAuthor(@PathVariable Long id, @RequestBody AuthorDTO authorDTO) {
         AuthorDTO updatedAuthor = authorService.updateAuthor(id, authorDTO);
         return new ResponseEntity<>(updatedAuthor, HttpStatus.OK);
     }
 
-    // Delete an author
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAuthor(@PathVariable Long id) {
         authorService.deleteAuthor(id);

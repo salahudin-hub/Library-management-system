@@ -17,8 +17,7 @@ public class TransactionMapper {
     public static Transaction toEntity(TransactionDTO transactionDTO) {
         Transaction transaction = new Transaction();
         transaction.setId(transactionDTO.getId());
-        // Note: You'll need to fetch the Book and User entities using their IDs
-        // and set them in the Transaction entity.
+
         return transaction;
     }
 }

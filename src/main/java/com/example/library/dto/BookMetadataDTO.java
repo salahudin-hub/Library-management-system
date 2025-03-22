@@ -1,16 +1,11 @@
-package com.example.library.entity;
+package com.example.library.dto;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.List;
 
-@Document(collection = "book_metadata")
-
-public class BookMetadata {
-    @Id
+public class BookMetadataDTO {
     private String id;
     private String bookId;
-    private List<Review> reviews;
+    private List<ReviewDTO> reviews;
     private List<String> tags;
     private double averageRating;
 
@@ -31,11 +26,11 @@ public class BookMetadata {
         this.bookId = bookId;
     }
 
-    public List<Review> getReviews() {
+    public List<ReviewDTO> getReviews() {
         return reviews;
     }
 
-    public void setReviews(List<Review> reviews) {
+    public void setReviews(List<ReviewDTO> reviews) {
         this.reviews = reviews;
     }
 
@@ -56,7 +51,7 @@ public class BookMetadata {
     }
 
 
-    public static class Review {
+    public static class ReviewDTO {
         private String userId;
         private int rating;
         private String comment;

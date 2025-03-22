@@ -9,7 +9,7 @@ public class TransactionDTO {
     private LocalDate borrowDate;
     private LocalDate returnDate;
 
-    // Getters and Setters
+
     public Long getId() {
         return id;
     }

@@ -1,13 +1,8 @@
-package com.example.library.entity;
+package com.example.library.dto;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 
-@Document(collection = "user_activity")
-
-public class UserActivity {
-    @Id
+public class UserActivityDTO {
     private String id;
     private String userId;
     private String activityType;
@@ -55,4 +50,3 @@ public class UserActivity {
         this.timestamp = timestamp;
     }
 }
-

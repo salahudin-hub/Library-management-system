@@ -25,18 +25,18 @@ public class Transaction {
 
     private LocalDate returnDate;
 
-    // Default constructor (required by JPA)
+
     public Transaction() {
     }
 
-    // Parameterized constructor
+
     public Transaction(Book book, User user, LocalDate borrowDate) {
         this.book = book;
         this.user = user;
         this.borrowDate = borrowDate;
     }
 
-    // Getters and Setters
+
     public Long getId() {
         return id;
     }
@@ -77,7 +77,7 @@ public class Transaction {
         this.returnDate = returnDate;
     }
 
-    // toString method
+
     @Override
     public String toString() {
         return "Transaction{" +
@@ -89,7 +89,7 @@ public class Transaction {
                 '}';
     }
 
-    // equals and hashCode methods
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

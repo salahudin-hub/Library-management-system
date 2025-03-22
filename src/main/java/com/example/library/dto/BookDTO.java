@@ -3,10 +3,10 @@ package com.example.library.dto;
 public class BookDTO {
     private Long id;
     private String title;
-    private Long authorId; // Changed from String author
+    private Long authorId;
     private boolean available;
 
-    // Getters and Setters
+
     public Long getId() {
         return id;
     }

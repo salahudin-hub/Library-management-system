@@ -18,14 +18,14 @@ public class Author {
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Book> books = new ArrayList<>();
 
-    // Constructors
+
     public Author() {}
 
     public Author(String name) {
         this.name = name;
     }
 
-    // Getters and Setters
+
     public Long getId() {
         return id;
     }
@@ -50,7 +50,7 @@ public class Author {
         this.books = books;
     }
 
-    // toString, equals, and hashCode methods
+
     @Override
     public String toString() {
         return "Author{" +

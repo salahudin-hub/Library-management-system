@@ -17,7 +17,7 @@ public class AuthorService {
     @Autowired
     private AuthorRepository authorRepository;
 
-    // Get all authors
+
     public List<AuthorDTO> getAllAuthors() {
         List<Author> authors = authorRepository.findAll();
         return authors.stream()
@@ -25,21 +25,21 @@ public class AuthorService {
                 .collect(Collectors.toList());
     }
 
-    // Get an author by ID
+
     public AuthorDTO getAuthorById(Long id) {
         Author author = authorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Author not found with id: " + id));
         return AuthorMapper.toDTO(author);
     }
 
-    // Add a new author
+
     public AuthorDTO addAuthor(AuthorDTO authorDTO) {
         Author author = AuthorMapper.toEntity(authorDTO);
         Author savedAuthor = authorRepository.save(author);
         return AuthorMapper.toDTO(savedAuthor);
     }
 
-    // Update an author
+
     public AuthorDTO updateAuthor(Long id, AuthorDTO authorDTO) {
         Author existingAuthor = authorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Author not found with id: " + id));
@@ -48,7 +48,7 @@ public class AuthorService {
         return AuthorMapper.toDTO(updatedAuthor);
     }
 
-    // Delete an author
+
     public void deleteAuthor(Long id) {
         authorRepository.deleteById(id);
     }

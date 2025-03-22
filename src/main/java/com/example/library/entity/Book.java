@@ -24,7 +24,7 @@ public class Book {
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaction> transactions = new ArrayList<>();
 
-    // Constructors
+
     public Book() {}
 
     public Book(String title, Author author, boolean isAvailable) {
@@ -33,7 +33,7 @@ public class Book {
         this.isAvailable = isAvailable;
     }
 
-    // Getters and Setters
+
     public Long getId() {
         return id;
     }

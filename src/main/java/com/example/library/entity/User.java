@@ -24,21 +24,21 @@ public class User {
     @Column(unique = true)
     private String email;
 
-    // Add a OneToMany relationship with Transaction
+    //  OneToMany relationship with Transaction
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaction> transactions = new ArrayList<>();
 
-    // Default constructor (required by JPA)
+
     public User() {
     }
 
-    // Parameterized constructor
+
     public User(String name, String email) {
         this.name = name;
         this.email = email;
     }
 
-    // Getters and Setters
+
     public Long getId() {
         return id;
     }
@@ -63,7 +63,7 @@ public class User {
         this.email = email;
     }
 
-    // Getter and Setter for transactions
+
     public List<Transaction> getTransactions() {
         return transactions;
     }
