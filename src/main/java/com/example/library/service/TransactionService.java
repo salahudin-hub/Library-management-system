@@ -7,34 +7,35 @@ import com.example.library.mapper.BookMapper;
 import com.example.library.mapper.TransactionMapper;
 import com.example.library.mapper.UserMapper;
 import com.example.library.repository.TransactionRepository;
+import com.example.library.repository.BookRepository;
 import com.example.library.entity.Book;
 import com.example.library.entity.Transaction;
 import com.example.library.entity.User;
 import com.example.library.exception.BookAlreadyReturnedException;
 import com.example.library.exception.BookNotAvailableException;
 import com.example.library.exception.ResourceNotFoundException;
-import com.example.library.service.UserActivityService;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class TransactionService {
     @Autowired
     private BookService bookService;
-
     @Autowired
     private UserService userService;
-
     @Autowired
     private TransactionRepository transactionRepository;
-
+    @Autowired
+    private BookRepository bookRepository;
     @Autowired
     private UserActivityService userActivityService;
-
 
     public List<TransactionDTO> getAllTransactions() {
         List<Transaction> transactions = transactionRepository.findAll();
@@ -43,37 +44,28 @@ public class TransactionService {
                 .collect(Collectors.toList());
     }
 
-
     public TransactionDTO borrowBook(Long bookId, Long userId) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found"));
 
-        BookDTO bookDTO = bookService.getBookById(bookId);
-
-        Book book = BookMapper.toEntity(bookDTO);
-
+        Hibernate.initialize(book.getAuthor());
 
         if (!book.isAvailable()) {
             throw new BookNotAvailableException("Book is not available");
         }
 
-
         UserDTO userDTO = userService.getUserById(userId);
-
-
         User user = UserMapper.toEntity(userDTO);
-
 
         Transaction transaction = new Transaction();
         transaction.setBook(book);
         transaction.setUser(user);
         transaction.setBorrowDate(LocalDate.now());
 
-
         book.setAvailable(false);
-        bookService.updateBook(bookId, BookMapper.toDTO(book));
-
+        bookRepository.save(book);
 
         Transaction savedTransaction = transactionRepository.save(transaction);
-
 
         userActivityService.logUserActivity(
                 userId.toString(),
@@ -84,38 +76,25 @@ public class TransactionService {
         return TransactionMapper.toDTO(savedTransaction);
     }
 
-
     public TransactionDTO returnBook(Long transactionId) {
-
         Transaction transaction = transactionRepository.findById(transactionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Transaction not found with id: " + transactionId));
-
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));
 
         if (transaction.getReturnDate() != null) {
-            throw new BookAlreadyReturnedException("Book has already been returned");
+            throw new BookAlreadyReturnedException("Book already returned");
         }
 
-
         Book book = transaction.getBook();
-
-
         book.setAvailable(true);
-
-
-        BookDTO bookDTO = BookMapper.toDTO(book);
-        bookService.updateBook(book.getId(), bookDTO);
-
+        bookRepository.save(book);
 
         transaction.setReturnDate(LocalDate.now());
-
-
         Transaction updatedTransaction = transactionRepository.save(transaction);
 
-        // Log the activity in MongoDB
         userActivityService.logUserActivity(
                 transaction.getUser().getId().toString(),
                 "return",
-                "book_id: '" + transaction.getBook().getId() + "'"
+                "book_id: '" + book.getId() + "'"
         );
 
         return TransactionMapper.toDTO(updatedTransaction);
